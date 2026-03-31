@@ -1270,6 +1270,7 @@
     <li><a href="about.html" data-i18n="nav_about">About</a></li>
     <li><a href="contact.html" data-i18n="nav_contact">Contact</a></li>
     <li><a href="consultation-demo.html" class="nav-session" data-i18n="nav_session">My Session</a></li>
+    <li><a href="account.html" style="font-size:13px;color:var(--mid);text-decoration:none;transition:color .2s;">My Account</a></li>
     <li><a href="booking.html" class="nav-cta" data-i18n="nav_book">Book a Consultation</a></li>
   </ul>
   <div class="lang-switcher">
@@ -1281,6 +1282,8 @@
       <button onclick="selectLang('jp','日本語')">日本語</button>
       <button onclick="selectLang('zh','中文')">中文</button>
       <button onclick="selectLang('th','ไทย')">ไทย</button>
+      <button onclick="selectLang('de','DE')">Deutsch</button>
+      <button onclick="selectLang('es','ES')">Español</button>
     </div>
   </div>
 </nav>
@@ -1605,7 +1608,7 @@
       <a href="#about" data-i18n="fc3_1">About</a>
       <a href="#contact" data-i18n="fc3_2">Contact</a>
       <a href="#" data-i18n="fc3_3">Blog</a>
-      <a href="#" data-i18n="fc3_4">Client Login</a>
+      <a href="#" data-i18n="fc3_4">My Account</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -1619,7 +1622,7 @@
 const i18n = {
   en: {
     nav_services: "Services", nav_who: "Who We Serve", nav_tests: "Assessments",
-    nav_about: "About", nav_contact: "Contact", nav_login: "Client Login",
+    nav_about: "About", nav_contact: "Contact", nav_account: "My Account",
     hero_eyebrow: "Psychological Well-Being Program",
     hero_h1_a: "Every person behind the work", hero_h1_b: "deserves care.", hero_h1_c: "",
     hero_desc: "Safe Mind provides professional psychological well-being support for the creative and cultural industries. For everyone  -  from the headliner to the janitor who cleans the stage. No HR required.",
@@ -1666,12 +1669,12 @@ const i18n = {
     footer_desc: "Psychological well-being for the creative industry. Accessible to everyone, regardless of role or rank.",
     footer_about: "About Safe Mind", footer_col1: "Services", footer_col2: "Assessments", footer_col3: "Company",
     fc1_1: "Prevention", fc1_2: "Individual Support", fc1_3: "Team Training", fc1_4: "Protocols",
-    fc3_1: "About", fc3_2: "Contact", fc3_3: "Blog", fc3_4: "Client Login",
+    fc3_1: "About", fc3_2: "Contact", fc3_3: "Blog", fc3_4: "My Account",
     footer_rights: "All rights reserved.", footer_tagline: "\"Psychological well-being for everyone in the creative industry.\""
   },
   fr: {
     nav_services: "Services", nav_who: "Notre Public", nav_tests: "Évaluations",
-    nav_about: "À Propos", nav_contact: "Contact", nav_login: "Espace Client",
+    nav_about: "À Propos", nav_contact: "Contact", nav_account: "Espace Client",
     hero_eyebrow: "Programme de Bien-Être Psychologique",
     hero_h1_a: "Protéger les esprits", hero_h1_b: "dans l'ombre des projecteurs.", hero_h1_c: "",
     hero_desc: "Safe Mind propose un soutien professionnel en bien-être psychologique pour les industries créatives et culturelles. Pour tout le monde  -  de la tête d'affiche à l'agent d'entretien. Sans RH requis.",
@@ -1723,7 +1726,7 @@ const i18n = {
   },
   kr: {
     nav_services: "서비스", nav_who: "대상", nav_tests: "심리검사",
-    nav_about: "소개", nav_contact: "문의", nav_login: "고객 로그인",
+    nav_about: "소개", nav_contact: "문의", nav_account: "고객 로그인",
     hero_eyebrow: "심리 웰빙 프로그램",
     hero_h1_a: "무대 뒤의 마음을", hero_h1_b: "지켜드립니다.", hero_h1_c: "",
     hero_desc: "Safe Mind는 창작 및 문화 산업의 모든 사람을 위한 전문적인 심리 웰빙 지원 서비스입니다. 헤드라이너부터 청소부까지. HR 없이도 이용 가능합니다.",
@@ -1775,7 +1778,7 @@ const i18n = {
   },
   jp: {
     nav_services: "サービス", nav_who: "対象者", nav_tests: "心理検査",
-    nav_about: "について", nav_contact: "お問い合わせ", nav_login: "ログイン",
+    nav_about: "について", nav_contact: "お問い合わせ", nav_account: "ログイン",
     hero_eyebrow: "心理的ウェルビーイングプログラム",
     hero_h1_a: "スポットライトの裏にある", hero_h1_b: "心を守ります。", hero_h1_c: "",
     hero_desc: "Safe Mindは、クリエイティブ・文化産業のすべての人のための専門的な心理的ウェルビーイングサポートです。ヘッドライナーから清掃員まで。HR不要。",
@@ -1823,7 +1826,7 @@ const i18n = {
   },
   zh: {
     nav_services: "服务", nav_who: "服务对象", nav_tests: "心理评估",
-    nav_about: "关于我们", nav_contact: "联系我们", nav_login: "客户登录",
+    nav_about: "关于我们", nav_contact: "联系我们", nav_account: "客户登录",
     hero_eyebrow: "心理健康项目",
     hero_h1_a: "守护聚光灯背后", hero_h1_b: "的每一颗心。", hero_h1_c: "",
     hero_desc: "Safe Mind为创意和文化产业的所有人提供专业的心理健康支持。从头牌到清洁工。无需HR。",
@@ -1871,7 +1874,7 @@ const i18n = {
   },
   th: {
     nav_services: "บริการ", nav_who: "กลุ่มเป้าหมาย", nav_tests: "การประเมิน",
-    nav_about: "เกี่ยวกับเรา", nav_contact: "ติดต่อ", nav_login: "เข้าสู่ระบบ",
+    nav_about: "เกี่ยวกับเรา", nav_contact: "ติดต่อ", nav_account: "เข้าสู่ระบบ",
     hero_eyebrow: "โปรแกรมสุขภาพจิตและความเป็นอยู่ที่ดี",
     hero_h1_a: "ปกป้องจิตใจ", hero_h1_b: "เบื้องหลังแสงไฟ", hero_h1_c: "",
     hero_desc: "Safe Mind ให้การสนับสนุนด้านสุขภาวะทางจิตอย่างมืออาชีพสำหรับอุตสาหกรรมสร้างสรรค์และวัฒนธรรม สำหรับทุกคน ตั้งแต่นักแสดงหลักไปจนถึงพนักงานทำความสะอาด ไม่ต้องการ HR",
@@ -1920,6 +1923,84 @@ const i18n = {
     fc1_1: "การป้องกัน", fc1_2: "การสนับสนุนส่วนบุคคล", fc1_3: "การฝึกอบรมทีม", fc1_4: "โปรโตคอล",
     fc3_1: "เกี่ยวกับเรา", fc3_2: "ติดต่อ", fc3_3: "บล็อก", fc3_4: "เข้าสู่ระบบ",
     footer_rights: "สงวนลิขสิทธิ์", footer_tagline: "\"สุขภาวะทางจิตสำหรับทุกคนในอุตสาหกรรมสร้างสรรค์\""
+  },
+  de: {
+    nav_services: "Leistungen", nav_who: "Unsere Zielgruppe", nav_tests: "Assessments",
+    nav_about: "Uber uns", nav_contact: "Kontakt", nav_account: "Mein Konto",
+    nav_session: "Meine Sitzung", nav_book: "Beratung buchen",
+    hero_eyebrow: "Psychologisches Wohlbefinden fur die Kreativbranche",
+    hero_h1_a: "Jede Person hinter der Arbeit", hero_h1_b: "verdient Fursorge.", hero_h1_c: "",
+    hero_desc: "Safe Mind bietet professionelle Unterstutzung fur das psychische Wohlbefinden aller Menschen in der Kreativ- und Kulturindustrie. Vom Headliner bis zum Reinigungspersonal.",
+    hero_cta1: "Unsere Leistungen entdecken", hero_cta2: "Beratung buchen",
+    mission_tag: "Unsere Philosophie",
+    mission_quote: "\"Die Kreativbranche leuchtet durch Tausende unsichtbarer Hande. Sie verdienen mehr als Anerkennung - sie verdienen Fursorge.\"",
+    mission_author: "- Amakon Grace Daniella, Grunderin von Safe Mind",
+    mp1_title: "Pravention zuerst", mp1_desc: "Wir handeln, bevor Krisen entstehen. Unser Ansatz ist proaktiv, kontinuierlich und zutiefst menschlich.",
+    mp2_title: "Ganzheitlich und entstigmatisierend", mp2_desc: "Psychische Gesundheit ist keine Schwache. Wir schaffen Raume, in denen sich jeder sicher fuhlt zu sprechen.",
+    mp3_title: "Global zuganglich", mp3_desc: "100% remote, mehrsprachig und kultursensibel - fur Teams weltweit.",
+    services_tag: "Unser Angebot", services_h2a: "Vier Saulen", services_h2b: "der Fursorge",
+    services_desc: "Alle Leistungen werden 100% remote erbracht und auf die Kultur und Bedurfnisse Ihrer Organisation abgestimmt.",
+    s1_title: "Pravention & Psychoedukation", s1_desc: "Aufbau von psychologischem Wissen und Bewusstsein in der gesamten Organisation.",
+    s2_title: "Zuhoren & Individuelle Unterstutzung", s2_desc: "Vertrauliche Einzelsitzungen, die einen sicheren Raum bieten, um gehort, bewertet und begleitet zu werden.",
+    s3_title: "Team- & Managementschulung", s3_desc: "Fuhrungskrafte mit Werkzeugen ausstatten, um Belastungssignale zu erkennen und darauf zu reagieren.",
+    s4_title: "Protokolle & Organisationssicherheit", s4_desc: "Robuste Systeme entwerfen, die Mitarbeiter auf struktureller Ebene schutzen.",
+    who_tag: "Unsere Zielgruppe", who_h2a: "Jeder", who_h2b: "zahlt hier",
+    who_desc: "Wenn Sie in der Kreativbranche arbeiten, gehoren Sie dazu. Keine Rolle ist zu klein, kein Vertrag zu kurz. Safe Mind ist fur Sie alle.",
+    tests_tag: "Psychologische Assessments", tests_h2a: "Erfahren Sie", tests_h2b: "wo Sie stehen",
+    tests_desc: "Validierte psychologische Assessments - von schnellen Screenings mit sofortigen Ergebnissen bis hin zu umfassenden Evaluierungen.",
+    t1_desc: "Misst personliche, arbeitsbezogene und klientenbezogene Erschopfung.",
+    t2_desc: "7-Punkte-Screening auf generalisierte Angststorung mit sofortigen Ergebnissen.",
+    t3_desc: "9-Punkte-Depressions-Screening-Tool, weltweit von Fachleuten verwendet.",
+    t4_desc: "Misst wahrgenommene Stresslevel und Stressbewertung.",
+    t5_desc: "Bewertet Schlafqualitat und -storungen uber einen Monat.",
+    t6_desc: "Der Goldstandard fur globales Selbstwertgefuhl in 10 Punkten.",
+    t7_desc: "Umfassende Suizidrisikobewertung. Ergebnisse werden von unserem Team uberpruft.",
+    t8_desc: "Tiefgreifende Personlichkeits- und psychologische Assessments.",
+    cta_h2: "Bereit, Fursorge in Ihr Team zu bringen?", cta_p: "Ob Agentur, Studio oder Einzelperson - wir sind hier. Lassen Sie uns sprechen.", cta_btn: "Kontakt aufnehmen",
+    footer_desc: "Psychisches Wohlbefinden fur die Kreativbranche. Fur alle zuganglich, unabhangig von Rolle oder Rang.",
+    footer_about: "Uber Safe Mind", footer_col1: "Leistungen", footer_col2: "Assessments", footer_col3: "Unternehmen",
+    fc1_1: "Pravention", fc1_2: "Individuelle Unterstutzung", fc1_3: "Teamschulung", fc1_4: "Protokolle",
+    fc3_1: "Uber uns", fc3_2: "Kontakt", fc3_3: "Blog", fc3_4: "Anmelden",
+    footer_rights: "Alle Rechte vorbehalten.", footer_tagline: "\"Psychisches Wohlbefinden fur jeden in der Kreativbranche.\""
+  },
+  es: {
+    nav_services: "Servicios", nav_who: "A quien servimos", nav_tests: "Evaluaciones",
+    nav_about: "Sobre nosotros", nav_contact: "Contacto", nav_account: "Mi cuenta",
+    nav_session: "Mi sesion", nav_book: "Reservar consulta",
+    hero_eyebrow: "Bienestar psicologico para la industria creativa",
+    hero_h1_a: "Cada persona detras del trabajo", hero_h1_b: "merece cuidado.", hero_h1_c: "",
+    hero_desc: "Safe Mind ofrece apoyo profesional al bienestar psicologico para todos en las industrias creativas y culturales. Desde el artista principal hasta el personal de limpieza.",
+    hero_cta1: "Explorar nuestros servicios", hero_cta2: "Reservar una consulta",
+    mission_tag: "Nuestra filosofia",
+    mission_quote: "\"La industria creativa brilla gracias a miles de manos invisibles. Merecen mas que reconocimiento - merecen cuidado.\"",
+    mission_author: "- Amakon Grace Daniella, Fundadora de Safe Mind",
+    mp1_title: "Prevencion primero", mp1_desc: "Actuamos antes de que ocurran las crisis. Nuestro enfoque es proactivo, continuo y profundamente humano.",
+    mp2_title: "Holistico y sin estigma", mp2_desc: "La salud mental no es debilidad. Creamos espacios donde cada persona se siente segura para hablar.",
+    mp3_title: "Globalmente accesible", mp3_desc: "100% remoto, multilingue y culturalmente sensible - disponible para equipos en todo el mundo.",
+    services_tag: "Lo que ofrecemos", services_h2a: "Cuatro pilares", services_h2b: "de cuidado",
+    services_desc: "Todos los servicios se prestan 100% de forma remota y adaptados a la cultura y necesidades de su organizacion.",
+    s1_title: "Prevencion y psicoeducacion", s1_desc: "Construyendo conocimiento y conciencia psicologica en toda la organizacion.",
+    s2_title: "Escucha y apoyo individual", s2_desc: "Sesiones individuales confidenciales que proporcionan un espacio seguro para ser escuchado, evaluado y orientado.",
+    s3_title: "Formacion de equipos y gestion", s3_desc: "Equipar a gerentes y lideres con herramientas para reconocer senales de angustia psicologica.",
+    s4_title: "Protocolos y seguridad organizacional", s4_desc: "Disenar sistemas robustos que protejan a los empleados a nivel estructural.",
+    who_tag: "A quien servimos", who_h2a: "Todos", who_h2b: "importan aqui",
+    who_desc: "Si trabajas en la industria creativa, estas incluido. Ningun rol es demasiado pequeno, ningun contrato demasiado corto. Safe Mind es para todos ustedes.",
+    tests_tag: "Evaluaciones psicologicas", tests_h2a: "Conoce", tests_h2b: "tu estado",
+    tests_desc: "Evaluaciones psicologicas validadas - desde cribados rapidos con resultados inmediatos hasta evaluaciones completas revisadas por nuestro equipo.",
+    t1_desc: "Mide el agotamiento personal, laboral y relacionado con clientes.",
+    t2_desc: "Cribado de trastorno de ansiedad generalizada de 7 items con resultados automaticos inmediatos.",
+    t3_desc: "Herramienta de cribado de depresion de 9 items utilizada globalmente.",
+    t4_desc: "Mide los niveles de estres percibido.",
+    t5_desc: "Evalua la calidad del sueno y las perturbaciones durante un mes.",
+    t6_desc: "El estandar de oro de 10 items para la autoestima global.",
+    t7_desc: "Evaluacion integral del riesgo suicida. Resultados revisados por nuestro equipo.",
+    t8_desc: "Evaluaciones psicologicas y de personalidad en profundidad.",
+    cta_h2: "Listo para llevar el cuidado a su equipo?", cta_p: "Ya sea que represente una agencia, estudio o sea un individuo que busca apoyo - estamos aqui. Hablemos.", cta_btn: "Ponerse en contacto",
+    footer_desc: "Bienestar psicologico para la industria creativa. Accesible para todos, independientemente del rol o rango.",
+    footer_about: "Sobre Safe Mind", footer_col1: "Servicios", footer_col2: "Evaluaciones", footer_col3: "Empresa",
+    fc1_1: "Prevencion", fc1_2: "Apoyo individual", fc1_3: "Formacion de equipos", fc1_4: "Protocolos",
+    fc3_1: "Sobre nosotros", fc3_2: "Contacto", fc3_3: "Blog", fc3_4: "Iniciar sesion",
+    footer_rights: "Todos los derechos reservados.", footer_tagline: "\"Bienestar psicologico para todos en la industria creativa.\""
   }
 };
 
@@ -1933,7 +2014,7 @@ function setLang(lang) {
     const key = el.getAttribute('data-i18n');
     if (t[key] !== undefined) el.textContent = t[key];
   });
-  document.documentElement.lang = lang === 'kr' ? 'ko' : lang === 'jp' ? 'ja' : lang === 'zh' ? 'zh' : lang === 'th' ? 'th' : 'en';
+  document.documentElement.lang = lang === 'kr' ? 'ko' : lang === 'jp' ? 'ja' : lang === 'zh' ? 'zh' : lang === 'th' ? 'th' : lang === 'de' ? 'de' : lang === 'es' ? 'es' : 'en';
 }
 
 // Language dropdown
