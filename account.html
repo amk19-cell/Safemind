@@ -6,7 +6,444 @@
 <title>Safe Mind — My Account</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQsBvVIPG8MeaLf1sjWVSgXMOuOhoOi1U",
+    authDomain: "safemind-f96ad.firebaseapp.com",
+    projectId: "safemind-f96ad",
+    storageBucket: "safemind-f96ad.firebasestorage.app",
+    messagingSenderId: "1023142792047",
+    appId: "1:1023142792047:web:c441cddbd9634523adf69a"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  window.auth = auth;
+  
+  // COMPLETE TRANSLATIONS - ALL 8 LANGUAGES
+  const i18n = {
+    en: {
+      nav_back: "← Back to site", lang_en: "English", lang_fr: "Français", lang_kr: "한국어", lang_jp: "日本語", lang_zh: "中文", lang_th: "ไทย", lang_de: "DE", lang_es: "ES",
+      auth_title: "Welcome to", auth_sub: "Your psychological well-being, in a safe and confidential space.",
+      tab_login: "Sign In", tab_signup: "Create Account",
+      login_email: "Email address", login_password: "Password", login_forgot: "Forgot password?", login_btn: "Sign In",
+      signup_type_label: "I am", signup_type_individual: "Individual", signup_type_individual_desc: "Freelancer, artist, or independent worker",
+      signup_type_org: "Organization", signup_type_org_desc: "Employee of a company with a Safe Mind contract",
+      signup_name: "Full name", signup_email: "Email address", signup_password: "Password",
+      signup_hint: "If your organization has a Safe Mind contract, use your work email for automatic access.",
+      signup_btn: "Create Account",
+      reset_title: "Reset your password", reset_desc: "Enter your email and we'll send you a link to reset your password.",
+      reset_cancel: "Cancel", reset_send: "Send reset link",
+      dash_welcome: "Hello,", dash_signout: "Sign Out",
+      plan_individual: "👤 Individual Plan", plan_org: "🏢 Organization Member",
+      upgrade_title: "✨ Unlock everything with a Premium Plan", upgrade_desc: "Get unlimited assessments, priority support, and personalized guidance.", upgrade_btn: "Upgrade",
+      card_assessments_title: "Psychological Assessments", card_assessments_desc: "Take validated tests for depression, anxiety, burnout, PTSD, and more.", card_assessments_btn: "Start Assessment →",
+      card_sessions_title: "My Sessions", card_sessions_desc: "View and manage your scheduled consultation sessions.", card_sessions_btn: "View Sessions →",
+      card_history_title: "Results History", card_history_desc: "Access your past assessment results and track your progress.", card_history_btn: "Coming Soon",
+      card_privacy_title: "Privacy & Security", card_privacy_desc: "Manage your data, export your information, and adjust privacy settings.", card_privacy_btn: "Coming Soon",
+      footer_text: "© 2026 Safe Mind — Psychological well-being for everyone in the creative industry.",
+      msg_enter_email_password: "Please enter email and password", msg_signing_in: "Signing in...", msg_welcome_back: "Welcome back,", msg_signin_failed: "Sign in failed",
+      msg_no_account: "No account found with this email", msg_wrong_password: "Incorrect password", msg_invalid_email: "Invalid email format", msg_too_many_requests: "Too many failed attempts. Try again later.",
+      msg_fill_all_fields: "Please fill all fields", msg_password_length: "Password must be at least 6 characters", msg_creating_account: "Creating account...",
+      msg_account_created: "Account created successfully!", msg_signup_failed: "Sign up failed", msg_email_exists: "Email already registered. Sign in instead.",
+      msg_weak_password: "Password is too weak (min 6 characters)", msg_signed_out: "Signed out successfully", msg_reset_email_sent: "Password reset email sent! Check your inbox.", msg_reset_failed: "Reset failed"
+    },
+    fr: {
+      nav_back: "← Retour au site", lang_en: "English", lang_fr: "Français", lang_kr: "한국어", lang_jp: "日本語", lang_zh: "中文", lang_th: "ไทย", lang_de: "DE", lang_es: "ES",
+      auth_title: "Bienvenue sur", auth_sub: "Votre bien-être psychologique, dans un espace sûr et confidentiel.",
+      tab_login: "Se connecter", tab_signup: "Créer un compte",
+      login_email: "Adresse email", login_password: "Mot de passe", login_forgot: "Mot de passe oublié ?", login_btn: "Se connecter",
+      signup_type_label: "Je suis", signup_type_individual: "Individuel", signup_type_individual_desc: "Freelance, artiste ou travailleur indépendant",
+      signup_type_org: "Organisation", signup_type_org_desc: "Employé d'une entreprise avec un contrat Safe Mind",
+      signup_name: "Nom complet", signup_email: "Adresse email", signup_password: "Mot de passe",
+      signup_hint: "Si votre organisation a un contrat Safe Mind, utilisez votre email professionnel pour un accès automatique.",
+      signup_btn: "Créer un compte",
+      reset_title: "Réinitialiser votre mot de passe", reset_desc: "Entrez votre email et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+      reset_cancel: "Annuler", reset_send: "Envoyer le lien",
+      dash_welcome: "Bonjour,", dash_signout: "Se déconnecter",
+      plan_individual: "👤 Forfait Individuel", plan_org: "🏢 Membre d'une organisation",
+      upgrade_title: "✨ Débloquez tout avec un Forfait Premium", upgrade_desc: "Accédez à des évaluations illimitées, un support prioritaire et un accompagnement personnalisé.", upgrade_btn: "S'améliorer",
+      card_assessments_title: "Évaluations Psychologiques", card_assessments_desc: "Faites des tests validés pour la dépression, l'anxiété, l'épuisement, le TSPT et plus.", card_assessments_btn: "Commencer l'évaluation →",
+      card_sessions_title: "Mes Séances", card_sessions_desc: "Voir et gérer vos séances de consultation programmées.", card_sessions_btn: "Voir les séances →",
+      card_history_title: "Historique des Résultats", card_history_desc: "Accédez à vos résultats d'évaluation passés et suivez vos progrès.", card_history_btn: "Bientôt disponible",
+      card_privacy_title: "Confidentialité & Sécurité", card_privacy_desc: "Gérez vos données, exportez vos informations et ajustez vos paramètres de confidentialité.", card_privacy_btn: "Bientôt disponible",
+      footer_text: "© 2026 Safe Mind — Bien-être psychologique pour tous dans l'industrie créative.",
+      msg_enter_email_password: "Veuillez saisir votre email et mot de passe", msg_signing_in: "Connexion en cours...", msg_welcome_back: "Bon retour,", msg_signin_failed: "Échec de la connexion",
+      msg_no_account: "Aucun compte trouvé avec cet email", msg_wrong_password: "Mot de passe incorrect", msg_invalid_email: "Format d'email invalide", msg_too_many_requests: "Trop de tentatives échouées. Réessayez plus tard.",
+      msg_fill_all_fields: "Veuillez remplir tous les champs", msg_password_length: "Le mot de passe doit comporter au moins 6 caractères", msg_creating_account: "Création du compte...",
+      msg_account_created: "Compte créé avec succès !", msg_signup_failed: "Échec de la création du compte", msg_email_exists: "Email déjà enregistré. Connectez-vous plutôt.",
+      msg_weak_password: "Mot de passe trop faible (min 6 caractères)", msg_signed_out: "Déconnexion réussie", msg_reset_email_sent: "Email de réinitialisation envoyé ! Vérifiez votre boîte de réception.", msg_reset_failed: "Échec de la réinitialisation"
+    },
+    kr: {
+      nav_back: "← 사이트로 돌아가기", lang_en: "English", lang_fr: "Français", lang_kr: "한국어", lang_jp: "日本語", lang_zh: "中文", lang_th: "ไทย", lang_de: "DE", lang_es: "ES",
+      auth_title: "에 오신 것을 환영합니다", auth_sub: "안전하고 기밀적인 공간에서의 심리적 웰빙.",
+      tab_login: "로그인", tab_signup: "계정 만들기",
+      login_email: "이메일 주소", login_password: "비밀번호", login_forgot: "비밀번호를 잊으셨나요?", login_btn: "로그인",
+      signup_type_label: "저는", signup_type_individual: "개인", signup_type_individual_desc: "프리랜서, 아티스트 또는 독립 작업자",
+      signup_type_org: "조직", signup_type_org_desc: "Safe Mind 계약이 있는 회사의 직원",
+      signup_name: "전체 이름", signup_email: "이메일 주소", signup_password: "비밀번호",
+      signup_hint: "조직에 Safe Mind 계약이 있는 경우 업무용 이메일을 사용하면 자동으로 액세스됩니다.",
+      signup_btn: "계정 만들기",
+      reset_title: "비밀번호 재설정", reset_desc: "이메일을 입력하시면 비밀번호 재설정 링크를 보내드립니다.",
+      reset_cancel: "취소", reset_send: "링크 보내기",
+      dash_welcome: "안녕하세요,", dash_signout: "로그아웃",
+      plan_individual: "👤 개인 플랜", plan_org: "🏢 조직 멤버",
+      upgrade_title: "✨ 프리미엄 플랜으로 모든 기능 잠금 해제", upgrade_desc: "무제한 평가, 우선 지원 및 맞춤형 안내를 받으세요.", upgrade_btn: "업그레이드",
+      card_assessments_title: "심리 평가", card_assessments_desc: "우울증, 불안, 번아웃, PTSD 등 검증된 테스트를 진행하세요.", card_assessments_btn: "평가 시작 →",
+      card_sessions_title: "내 세션", card_sessions_desc: "예약된 상담 세션을 확인하고 관리하세요.", card_sessions_btn: "세션 보기 →",
+      card_history_title: "결과 기록", card_history_desc: "과거 평가 결과에 액세스하고 진행 상황을 추적하세요.", card_history_btn: "출시 예정",
+      card_privacy_title: "개인정보 및 보안", card_privacy_desc: "데이터 관리, 정보 내보내기, 개인정보 설정 조정.", card_privacy_btn: "출시 예정",
+      footer_text: "© 2026 Safe Mind — 창작 산업의 모든 사람을 위한 심리적 웰빙.",
+      msg_enter_email_password: "이메일과 비밀번호를 입력해주세요", msg_signing_in: "로그인 중...", msg_welcome_back: "다시 오신 것을 환영합니다,", msg_signin_failed: "로그인 실패",
+      msg_no_account: "해당 이메일로 등록된 계정이 없습니다", msg_wrong_password: "잘못된 비밀번호", msg_invalid_email: "잘못된 이메일 형식", msg_too_many_requests: "시도 횟수가 너무 많습니다. 나중에 다시 시도하세요.",
+      msg_fill_all_fields: "모든 필드를 작성해주세요", msg_password_length: "비밀번호는 최소 6자 이상이어야 합니다", msg_creating_account: "계정 생성 중...",
+      msg_account_created: "계정이 성공적으로 생성되었습니다!", msg_signup_failed: "계정 생성 실패", msg_email_exists: "이미 등록된 이메일입니다. 로그인하세요.",
+      msg_weak_password: "비밀번호가 너무 약합니다 (최소 6자)", msg_signed_out: "로그아웃되었습니다", msg_reset_email_sent: "비밀번호 재설정 이메일이 발송되었습니다! 받은편지함을 확인하세요.", msg_reset_failed: "재설정 실패"
+    },
+    jp: {
+      nav_back: "← サイトに戻る", lang_en: "English", lang_fr: "Français", lang_kr: "한국어", lang_jp: "日本語", lang_zh: "中文", lang_th: "ไทย", lang_de: "DE", lang_es: "ES",
+      auth_title: "ようこそ", auth_sub: "安全で機密性の高い空間での心理的ウェルビーイング。",
+      tab_login: "ログイン", tab_signup: "アカウント作成",
+      login_email: "メールアドレス", login_password: "パスワード", login_forgot: "パスワードをお忘れですか？", login_btn: "ログイン",
+      signup_type_label: "私は", signup_type_individual: "個人", signup_type_individual_desc: "フリーランサー、アーティスト、または独立したワーカー",
+      signup_type_org: "組織", signup_type_org_desc: "Safe Mind契約のある会社の従業員",
+      signup_name: "氏名", signup_email: "メールアドレス", signup_password: "パスワード",
+      signup_hint: "組織がSafe Mind契約を結んでいる場合は、業務用メールアドレスを使用すると自動的にアクセスできます。",
+      signup_btn: "アカウント作成",
+      reset_title: "パスワードをリセット", reset_desc: "メールアドレスを入力すると、パスワードリセット用のリンクをお送りします。",
+      reset_cancel: "キャンセル", reset_send: "リンクを送信",
+      dash_welcome: "こんにちは、", dash_signout: "ログアウト",
+      plan_individual: "👤 個人プラン", plan_org: "🏢 組織メンバー",
+      upgrade_title: "✨ プレミアムプランですべてをアンロック", upgrade_desc: "無制限の評価、優先サポート、パーソナライズされたガイダンスを入手。", upgrade_btn: "アップグレード",
+      card_assessments_title: "心理評価", card_assessments_desc: "うつ病、不安、バーンアウト、PTSDなどの検証済みテストを受ける。", card_assessments_btn: "評価を開始 →",
+      card_sessions_title: "マイセッション", card_sessions_desc: "予約された相談セッションを表示および管理します。", card_sessions_btn: "セッションを見る →",
+      card_history_title: "結果履歴", card_history_desc: "過去の評価結果にアクセスし、進捗状況を追跡します。", card_history_btn: "近日公開",
+      card_privacy_title: "プライバシーとセキュリティ", card_privacy_desc: "データの管理、情報のエクスポート、プライバシー設定の調整。", card_privacy_btn: "近日公開",
+      footer_text: "© 2026 Safe Mind — クリエイティブ産業のすべての人のための心理的ウェルビーイング。",
+      msg_enter_email_password: "メールアドレスとパスワードを入力してください", msg_signing_in: "ログイン中...", msg_welcome_back: "おかえりなさい、", msg_signin_failed: "ログインに失敗しました",
+      msg_no_account: "このメールアドレスのアカウントは見つかりません", msg_wrong_password: "パスワードが間違っています", msg_invalid_email: "無効なメール形式", msg_too_many_requests: "失敗が多すぎます。後でもう一度お試しください。",
+      msg_fill_all_fields: "すべての項目を入力してください", msg_password_length: "パスワードは6文字以上である必要があります", msg_creating_account: "アカウント作成中...",
+      msg_account_created: "アカウントが正常に作成されました！", msg_signup_failed: "アカウント作成に失敗しました", msg_email_exists: "このメールは既に登録されています。ログインしてください。",
+      msg_weak_password: "パスワードが弱すぎます（最小6文字）", msg_signed_out: "ログアウトしました", msg_reset_email_sent: "パスワードリセットメールを送信しました！受信トレイを確認してください。", msg_reset_failed: "リセットに失敗しました"
+    },
+    zh: {
+      nav_back: "← 返回网站", lang_en: "English", lang_fr: "Français", lang_kr: "한국어", lang_jp: "日本語", lang_zh: "中文", lang_th: "ไทย", lang_de: "DE", lang_es: "ES",
+      auth_title: "欢迎来到", auth_sub: "您的心理健康，在一个安全保密的空间。",
+      tab_login: "登录", tab_signup: "创建账户",
+      login_email: "电子邮箱", login_password: "密码", login_forgot: "忘记密码？", login_btn: "登录",
+      signup_type_label: "我是", signup_type_individual: "个人", signup_type_individual_desc: "自由职业者、艺术家或独立工作者",
+      signup_type_org: "组织", signup_type_org_desc: "与Safe Mind签订合同的公司的员工",
+      signup_name: "姓名", signup_email: "电子邮箱", signup_password: "密码",
+      signup_hint: "如果您的组织有Safe Mind合同，请使用您的工作邮箱自动访问。",
+      signup_btn: "创建账户",
+      reset_title: "重置密码", reset_desc: "输入您的电子邮件，我们将向您发送重置密码的链接。",
+      reset_cancel: "取消", reset_send: "发送链接",
+      dash_welcome: "你好，", dash_signout: "登出",
+      plan_individual: "👤 个人计划", plan_org: "🏢 组织成员",
+      upgrade_title: "✨ 使用高级计划解锁所有功能", upgrade_desc: "获得无限评估、优先支持和个性化指导。", upgrade_btn: "升级",
+      card_assessments_title: "心理评估", card_assessments_desc: "进行抑郁症、焦虑症、倦怠、PTSD等经过验证的测试。", card_assessments_btn: "开始评估 →",
+      card_sessions_title: "我的会话", card_sessions_desc: "查看和管理您预定的咨询会话。", card_sessions_btn: "查看会话 →",
+      card_history_title: "结果历史", card_history_desc: "访问您过去的评估结果并跟踪您的进展。", card_history_btn: "即将推出",
+      card_privacy_title: "隐私与安全", card_privacy_desc: "管理您的数据、导出信息、调整隐私设置。", card_privacy_btn: "即将推出",
+      footer_text: "© 2026 Safe Mind — 为创意产业中的每个人提供心理健康服务。",
+      msg_enter_email_password: "请输入电子邮件和密码", msg_signing_in: "登录中...", msg_welcome_back: "欢迎回来，", msg_signin_failed: "登录失败",
+      msg_no_account: "未找到与此电子邮件关联的帐户", msg_wrong_password: "密码错误", msg_invalid_email: "电子邮件格式无效", msg_too_many_requests: "失败尝试过多。请稍后重试。",
+      msg_fill_all_fields: "请填写所有字段", msg_password_length: "密码必须至少为6个字符", msg_creating_account: "创建账户中...",
+      msg_account_created: "账户创建成功！", msg_signup_failed: "创建账户失败", msg_email_exists: "电子邮件已注册。请登录。",
+      msg_weak_password: "密码太弱（最少6个字符）", msg_signed_out: "已成功登出", msg_reset_email_sent: "密码重置邮件已发送！请检查您的收件箱。", msg_reset_failed: "重置失败"
+    },
+    th: {
+      nav_back: "← กลับไปยังเว็บไซต์", lang_en: "English", lang_fr: "Français", lang_kr: "한국어", lang_jp: "日本語", lang_zh: "中文", lang_th: "ไทย", lang_de: "DE", lang_es: "ES",
+      auth_title: "ยินดีต้อนรับสู่", auth_sub: "ความเป็นอยู่ที่ดีทางจิตวิทยาของคุณ ในพื้นที่ที่ปลอดภัยและเป็นความลับ",
+      tab_login: "เข้าสู่ระบบ", tab_signup: "สร้างบัญชี",
+      login_email: "อีเมล", login_password: "รหัสผ่าน", login_forgot: "ลืมรหัสผ่าน?", login_btn: "เข้าสู่ระบบ",
+      signup_type_label: "ฉันคือ", signup_type_individual: "บุคคลทั่วไป", signup_type_individual_desc: "ฟรีแลนซ์ ศิลปิน หรือผู้ทำงานอิสระ",
+      signup_type_org: "องค์กร", signup_type_org_desc: "พนักงานของบริษัทที่มีสัญญากับ Safe Mind",
+      signup_name: "ชื่อเต็ม", signup_email: "อีเมล", signup_password: "รหัสผ่าน",
+      signup_hint: "หากองค์กรของคุณมีสัญญากับ Safe Mind ให้ใช้อีเมลที่ทำงานเพื่อการเข้าถึงอัตโนมัติ",
+      signup_btn: "สร้างบัญชี",
+      reset_title: "รีเซ็ตรหัสผ่าน", reset_desc: "ป้อนอีเมลของคุณ เราจะส่งลิงก์สำหรับรีเซ็ตรหัสผ่านให้คุณ",
+      reset_cancel: "ยกเลิก", reset_send: "ส่งลิงก์",
+      dash_welcome: "สวัสดี,", dash_signout: "ออกจากระบบ",
+      plan_individual: "👤 แผนรายบุคคล", plan_org: "🏢 สมาชิกองค์กร",
+      upgrade_title: "✨ ปลดล็อกทุกอย่างด้วยแผนพรีเมียม", upgrade_desc: "รับการประเมินไม่จำกัด การสนับสนุน優先 และคำแนะนำเฉพาะบุคคล", upgrade_btn: "อัปเกรด",
+      card_assessments_title: "การประเมินทางจิตวิทยา", card_assessments_desc: "ทำแบบทดสอบที่ผ่านการรับรองสำหรับภาวะซึมเศร้า วิตกกังวล หมดไฟ PTSD และอื่นๆ", card_assessments_btn: "เริ่มการประเมิน →",
+      card_sessions_title: "เซสชันของฉัน", card_sessions_desc: "ดูและจัดการเซสชันการให้คำปรึกษาที่กำหนดไว้", card_sessions_btn: "ดูเซสชัน →",
+      card_history_title: "ประวัติผลลัพธ์", card_history_desc: "เข้าถึงผลการประเมินในอดีตและติดตามความคืบหน้าของคุณ", card_history_btn: "เร็วๆ นี้",
+      card_privacy_title: "ความเป็นส่วนตัวและความปลอดภัย", card_privacy_desc: "จัดการข้อมูลของคุณ ส่งออกข้อมูล และปรับแต่งการตั้งค่าความเป็นส่วนตัว", card_privacy_btn: "เร็วๆ นี้",
+      footer_text: "© 2026 Safe Mind — ความเป็นอยู่ที่ดีทางจิตวิทยาสำหรับทุกคนในอุตสาหกรรมสร้างสรรค์",
+      msg_enter_email_password: "กรุณาป้อนอีเมลและรหัสผ่าน", msg_signing_in: "กำลังเข้าสู่ระบบ...", msg_welcome_back: "ยินดีต้อนรับกลับ,", msg_signin_failed: "เข้าสู่ระบบล้มเหลว",
+      msg_no_account: "ไม่พบบัญชีกับอีเมลนี้", msg_wrong_password: "รหัสผ่านไม่ถูกต้อง", msg_invalid_email: "รูปแบบอีเมลไม่ถูกต้อง", msg_too_many_requests: "ความพยายามล้มเหลวมากเกินไป กรุณาลองใหม่ภายหลัง",
+      msg_fill_all_fields: "กรุณากรอกข้อมูลให้ครบทุกช่อง", msg_password_length: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร", msg_creating_account: "กำลังสร้างบัญชี...",
+      msg_account_created: "สร้างบัญชีสำเร็จ!", msg_signup_failed: "การสร้างบัญชีล้มเหลว", msg_email_exists: "อีเมลนี้ลงทะเบียนแล้ว กรุณาเข้าสู่ระบบ",
+      msg_weak_password: "รหัสผ่านอ่อนเกินไป (ขั้นต่ำ 6 ตัวอักษร)", msg_signed_out: "ออกจากระบบสำเร็จ", msg_reset_email_sent: "ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว! ตรวจสอบกล่องจดหมายของคุณ", msg_reset_failed: "การรีเซ็ตล้มเหลว"
+    },
+    de: {
+      nav_back: "← Zurück zur Website", lang_en: "English", lang_fr: "Français", lang_kr: "한국어", lang_jp: "日本語", lang_zh: "中文", lang_th: "ไทย", lang_de: "DE", lang_es: "ES",
+      auth_title: "Willkommen bei", auth_sub: "Ihr psychisches Wohlbefinden in einem sicheren und vertraulichen Raum.",
+      tab_login: "Anmelden", tab_signup: "Konto erstellen",
+      login_email: "E-Mail-Adresse", login_password: "Passwort", login_forgot: "Passwort vergessen?", login_btn: "Anmelden",
+      signup_type_label: "Ich bin", signup_type_individual: "Einzelperson", signup_type_individual_desc: "Freiberufler, Künstler oder unabhängiger Arbeiter",
+      signup_type_org: "Organisation", signup_type_org_desc: "Mitarbeiter eines Unternehmens mit Safe Mind-Vertrag",
+      signup_name: "Vollständiger Name", signup_email: "E-Mail-Adresse", signup_password: "Passwort",
+      signup_hint: "Wenn Ihre Organisation einen Safe Mind-Vertrag hat, verwenden Sie Ihre Arbeits-E-Mail für den automatischen Zugriff.",
+      signup_btn: "Konto erstellen",
+      reset_title: "Passwort zurücksetzen", reset_desc: "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Link zum Zurücksetzen Ihres Passworts.",
+      reset_cancel: "Abbrechen", reset_send: "Link senden",
+      dash_welcome: "Hallo,", dash_signout: "Abmelden",
+      plan_individual: "👤 Individueller Plan", plan_org: "🏢 Organisationsmitglied",
+      upgrade_title: "✨ Schalten Sie alles mit einem Premium-Plan frei", upgrade_desc: "Erhalten Sie unbegrenzte Bewertungen, Prioritätsunterstützung und persönliche Beratung.", upgrade_btn: "Upgrade",
+      card_assessments_title: "Psychologische Bewertungen", card_assessments_desc: "Machen Sie validierte Tests für Depressionen, Angstzustände, Burnout, PTSD und mehr.", card_assessments_btn: "Bewertung starten →",
+      card_sessions_title: "Meine Sitzungen", card_sessions_desc: "Sehen und verwalten Sie Ihre geplanten Beratungssitzungen.", card_sessions_btn: "Sitzungen anzeigen →",
+      card_history_title: "Ergebnisverlauf", card_history_desc: "Greifen Sie auf Ihre früheren Bewertungsergebnisse zu und verfolgen Sie Ihre Fortschritte.", card_history_btn: "Demnächst verfügbar",
+      card_privacy_title: "Datenschutz & Sicherheit", card_privacy_desc: "Verwalten Sie Ihre Daten, exportieren Sie Ihre Informationen und passen Sie die Datenschutzeinstellungen an.", card_privacy_btn: "Demnächst verfügbar",
+      footer_text: "© 2026 Safe Mind — Psychisches Wohlbefinden für alle in der Kreativbranche.",
+      msg_enter_email_password: "Bitte E-Mail und Passwort eingeben", msg_signing_in: "Anmelden...", msg_welcome_back: "Willkommen zurück,", msg_signin_failed: "Anmeldung fehlgeschlagen",
+      msg_no_account: "Kein Konto mit dieser E-Mail gefunden", msg_wrong_password: "Falsches Passwort", msg_invalid_email: "Ungültiges E-Mail-Format", msg_too_many_requests: "Zu viele fehlgeschlagene Versuche. Bitte versuchen Sie es später erneut.",
+      msg_fill_all_fields: "Bitte füllen Sie alle Felder aus", msg_password_length: "Passwort muss mindestens 6 Zeichen lang sein", msg_creating_account: "Konto wird erstellt...",
+      msg_account_created: "Konto erfolgreich erstellt!", msg_signup_failed: "Kontoerstellung fehlgeschlagen", msg_email_exists: "E-Mail bereits registriert. Bitte melden Sie sich an.",
+      msg_weak_password: "Passwort ist zu schwach (mind. 6 Zeichen)", msg_signed_out: "Erfolgreich abgemeldet", msg_reset_email_sent: "E-Mail zum Zurücksetzen des Passworts wurde gesendet! Überprüfen Sie Ihren Posteingang.", msg_reset_failed: "Zurücksetzen fehlgeschlagen"
+    },
+    es: {
+      nav_back: "← Volver al sitio", lang_en: "English", lang_fr: "Français", lang_kr: "한국어", lang_jp: "日本語", lang_zh: "中文", lang_th: "ไทย", lang_de: "DE", lang_es: "ES",
+      auth_title: "Bienvenido a", auth_sub: "Su bienestar psicológico, en un espacio seguro y confidencial.",
+      tab_login: "Iniciar sesión", tab_signup: "Crear cuenta",
+      login_email: "Correo electrónico", login_password: "Contraseña", login_forgot: "¿Olvidó su contraseña?", login_btn: "Iniciar sesión",
+      signup_type_label: "Soy", signup_type_individual: "Individual", signup_type_individual_desc: "Freelance, artista o trabajador independiente",
+      signup_type_org: "Organización", signup_type_org_desc: "Empleado de una empresa con contrato Safe Mind",
+      signup_name: "Nombre completo", signup_email: "Correo electrónico", signup_password: "Contraseña",
+      signup_hint: "Si su organización tiene un contrato Safe Mind, use su correo laboral para acceso automático.",
+      signup_btn: "Crear cuenta",
+      reset_title: "Restablecer su contraseña", reset_desc: "Ingrese su correo electrónico y le enviaremos un enlace para restablecer su contraseña.",
+      reset_cancel: "Cancelar", reset_send: "Enviar enlace",
+      dash_welcome: "Hola,", dash_signout: "Cerrar sesión",
+      plan_individual: "👤 Plan Individual", plan_org: "🏢 Miembro de Organización",
+      upgrade_title: "✨ Desbloquee todo con un Plan Premium", upgrade_desc: "Obtenga evaluaciones ilimitadas, soporte prioritario y orientación personalizada.", upgrade_btn: "Mejorar",
+      card_assessments_title: "Evaluaciones Psicológicas", card_assessments_desc: "Realice pruebas validadas para depresión, ansiedad, agotamiento, TEPT y más.", card_assessments_btn: "Comenzar evaluación →",
+      card_sessions_title: "Mis Sesiones", card_sessions_desc: "Vea y gestione sus sesiones de consulta programadas.", card_sessions_btn: "Ver sesiones →",
+      card_history_title: "Historial de Resultados", card_history_desc: "Acceda a sus resultados de evaluaciones pasadas y realice un seguimiento de su progreso.", card_history_btn: "Próximamente",
+      card_privacy_title: "Privacidad y Seguridad", card_privacy_desc: "Gestione sus datos, exporte su información y ajuste la configuración de privacidad.", card_privacy_btn: "Próximamente",
+      footer_text: "© 2026 Safe Mind — Bienestar psicológico para todos en la industria creativa.",
+      msg_enter_email_password: "Por favor ingrese correo electrónico y contraseña", msg_signing_in: "Iniciando sesión...", msg_welcome_back: "Bienvenido de nuevo,", msg_signin_failed: "Error al iniciar sesión",
+      msg_no_account: "No se encontró ninguna cuenta con este correo electrónico", msg_wrong_password: "Contraseña incorrecta", msg_invalid_email: "Formato de correo electrónico inválido", msg_too_many_requests: "Demasiados intentos fallidos. Intente de nuevo más tarde.",
+      msg_fill_all_fields: "Por favor complete todos los campos", msg_password_length: "La contraseña debe tener al menos 6 caracteres", msg_creating_account: "Creando cuenta...",
+      msg_account_created: "¡Cuenta creada exitosamente!", msg_signup_failed: "Error al crear la cuenta", msg_email_exists: "Correo electrónico ya registrado. Inicie sesión en su lugar.",
+      msg_weak_password: "La contraseña es demasiado débil (mínimo 6 caracteres)", msg_signed_out: "Sesión cerrada exitosamente", msg_reset_email_sent: "¡Correo de restablecimiento de contraseña enviado! Revise su bandeja de entrada.", msg_reset_failed: "Error al restablecer"
+    }
+  };
+  
+  let currentLang = 'en';
+  
+  function setLanguage(lang) {
+    currentLang = lang;
+    const t = i18n[lang];
+    if (!t) return;
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) {
+        if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) {
+          el.placeholder = t[key];
+        } else {
+          el.textContent = t[key];
+        }
+      }
+    });
+    
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+    
+    document.documentElement.lang = lang === 'kr' ? 'ko' : lang === 'jp' ? 'ja' : lang === 'zh' ? 'zh' : lang === 'th' ? 'th' : lang === 'de' ? 'de' : lang === 'es' ? 'es' : 'en';
+  }
+  
+  window.setLanguage = setLanguage;
+  
+  window.selectLang = (lang, label) => {
+    setLanguage(lang);
+    document.getElementById('langToggle').textContent = label;
+    document.getElementById('langDropdown').classList.remove('open');
+  };
+  
+  window.toggleLangMenu = () => {
+    document.getElementById('langDropdown').classList.toggle('open');
+  };
+  
+  function showMsg(element, message, type) {
+    element.textContent = message;
+    element.className = `msg ${type} show`;
+    setTimeout(() => element.classList.remove('show'), 4000);
+  }
+  
+  window.signIn = async () => {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const msg = document.getElementById('loginMsg');
+    const t = i18n[currentLang];
+    
+    if (!email || !password) return showMsg(msg, t.msg_enter_email_password, 'error');
+    try {
+      showMsg(msg, t.msg_signing_in, 'info');
+      const user = await signInWithEmailAndPassword(auth, email, password);
+      showMsg(msg, `${t.msg_welcome_back} ${user.user.email}!`, 'success');
+      setTimeout(() => {
+        document.getElementById('authView').classList.remove('active');
+        document.getElementById('dashboardView').classList.add('active');
+        loadDashboard(user.user);
+      }, 1000);
+    } catch (error) {
+      let errorMsg = t.msg_signin_failed;
+      if (error.code === 'auth/user-not-found') errorMsg = t.msg_no_account;
+      else if (error.code === 'auth/wrong-password') errorMsg = t.msg_wrong_password;
+      else if (error.code === 'auth/invalid-email') errorMsg = t.msg_invalid_email;
+      else if (error.code === 'auth/too-many-requests') errorMsg = t.msg_too_many_requests;
+      showMsg(msg, errorMsg, 'error');
+    }
+  };
+  
+  window.signUp = async () => {
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const name = document.getElementById('signupName').value;
+    const userType = window.selectedUserType || 'individual';
+    const msg = document.getElementById('signupMsg');
+    const t = i18n[currentLang];
+    
+    if (!email || !password || !name) return showMsg(msg, t.msg_fill_all_fields, 'error');
+    if (password.length < 6) return showMsg(msg, t.msg_password_length, 'error');
+    try {
+      showMsg(msg, t.msg_creating_account, 'info');
+      const user = await createUserWithEmailAndPassword(auth, email, password);
+      localStorage.setItem('userName', name);
+      localStorage.setItem('userType', userType);
+      showMsg(msg, t.msg_account_created, 'success');
+      setTimeout(() => {
+        document.getElementById('authView').classList.remove('active');
+        document.getElementById('dashboardView').classList.add('active');
+        loadDashboard(user.user);
+      }, 1000);
+    } catch (error) {
+      let errorMsg = t.msg_signup_failed;
+      if (error.code === 'auth/email-already-in-use') errorMsg = t.msg_email_exists;
+      else if (error.code === 'auth/invalid-email') errorMsg = t.msg_invalid_email;
+      else if (error.code === 'auth/weak-password') errorMsg = t.msg_weak_password;
+      showMsg(msg, errorMsg, 'error');
+    }
+  };
+  
+  window.signOutUser = async () => {
+    const t = i18n[currentLang];
+    try {
+      await signOut(auth);
+      document.getElementById('dashboardView').classList.remove('active');
+      document.getElementById('authView').classList.add('active');
+      showMsg(document.getElementById('loginMsg'), t.msg_signed_out, 'success');
+    } catch (error) { console.error(error); }
+  };
+  
+  window.resetPassword = async () => {
+    const email = document.getElementById('resetEmail').value;
+    const msg = document.getElementById('resetMsg');
+    const t = i18n[currentLang];
+    if (!email) return showMsg(msg, t.msg_enter_email_password, 'error');
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showMsg(msg, t.msg_reset_email_sent, 'success');
+      setTimeout(() => {
+        document.getElementById('forgotModal').style.display = 'none';
+        document.getElementById('resetEmail').value = '';
+      }, 2000);
+    } catch (error) {
+      showMsg(msg, error.code === 'auth/user-not-found' ? t.msg_no_account : t.msg_reset_failed, 'error');
+    }
+  };
+  
+  window.showForgot = () => document.getElementById('forgotModal').style.display = 'flex';
+  window.closeForgot = () => {
+    document.getElementById('forgotModal').style.display = 'none';
+    document.getElementById('resetMsg').classList.remove('show');
+  };
+  
+  window.switchTab = (tab) => {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const tabLogin = document.getElementById('tabLogin');
+    const tabSignup = document.getElementById('tabSignup');
+    if (tab === 'login') {
+      loginForm.style.display = 'block';
+      signupForm.style.display = 'none';
+      tabLogin.classList.add('active');
+      tabSignup.classList.remove('active');
+    } else {
+      loginForm.style.display = 'none';
+      signupForm.style.display = 'block';
+      tabLogin.classList.remove('active');
+      tabSignup.classList.add('active');
+    }
+  };
+  
+  window.selectType = (type) => {
+    window.selectedUserType = type;
+    const individualCard = document.getElementById('typeIndividual');
+    const orgCard = document.getElementById('typeOrg');
+    const orgHint = document.getElementById('orgHint');
+    if (type === 'individual') {
+      individualCard.classList.add('selected');
+      orgCard.classList.remove('selected');
+      orgHint.style.display = 'none';
+    } else {
+      individualCard.classList.remove('selected');
+      orgCard.classList.add('selected');
+      orgHint.style.display = 'block';
+    }
+  };
+  
+  function loadDashboard(user) {
+    const t = i18n[currentLang];
+    const userName = localStorage.getItem('userName') || user.email.split('@')[0];
+    const userType = localStorage.getItem('userType') || 'individual';
+    document.getElementById('dashUserName').innerHTML = `${t.dash_welcome} ${userName}`;
+    document.getElementById('dashUserEmail').textContent = user.email;
+    const planBadge = document.getElementById('planBadge');
+    if (userType === 'individual') {
+      planBadge.innerHTML = t.plan_individual;
+      planBadge.className = 'plan-badge individual';
+      document.getElementById('upgradeBanner').style.display = 'flex';
+    } else {
+      planBadge.innerHTML = t.plan_org;
+      planBadge.className = 'plan-badge organization';
+      document.getElementById('upgradeBanner').style.display = 'none';
+    }
+  }
+  
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById('authView').classList.remove('active');
+      document.getElementById('dashboardView').classList.add('active');
+      loadDashboard(user);
+    } else {
+      document.getElementById('authView').classList.add('active');
+      document.getElementById('dashboardView').classList.remove('active');
+    }
+  });
+  
+  window.goToAssessment = (test) => window.location.href = `test-${test}.html`;
+  window.goToBooking = () => window.location.href = 'booking.html';
+  
+  setLanguage('en');
+  
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.lang-switcher')) {
+      document.getElementById('langDropdown').classList.remove('open');
+    }
+  });
+</script>
 <style>
 :root {
   --green:#3A6B3A;--green-dark:#2A4A2A;--green-light:#E8F2E8;
@@ -19,7 +456,6 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;}
 
-/* NAV */
 nav{padding:16px 48px;display:flex;justify-content:space-between;align-items:center;background:white;border-bottom:1px solid rgba(0,0,0,.06);position:sticky;top:0;z-index:100;}
 .nav-logo{text-decoration:none;display:flex;align-items:center;gap:10px;}
 .nav-logo img{height:44px;width:auto;}
@@ -28,46 +464,30 @@ nav{padding:16px 48px;display:flex;justify-content:space-between;align-items:cen
 .nav-logo .sub-name{font-size:9px;color:var(--light);letter-spacing:.18em;text-transform:uppercase;margin-top:2px;}
 .nav-back{text-decoration:none;color:var(--mid);font-size:13px;display:flex;align-items:center;gap:6px;transition:color .2s;}
 .nav-back:hover{color:var(--green);}
+.nav-right{display:flex;align-items:center;gap:20px;}
+.lang-switcher{position:relative;}
+.lang-toggle{background:none;border:1.5px solid var(--green);color:var(--green);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.lang-toggle:hover,.lang-toggle.open{background:var(--green);color:white;}
+.lang-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:white;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.06);overflow:hidden;min-width:140px;z-index:100;}
+.lang-dropdown.open{display:block;}
+.lang-dropdown button{display:block;width:100%;padding:11px 18px;text-align:left;background:none;border:none;font-size:13px;color:var(--charcoal);cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;border-bottom:1px solid rgba(0,0,0,.04);}
+.lang-dropdown button:last-child{border-bottom:none;}
+.lang-dropdown button:hover{background:var(--green-light);color:var(--green-dark);}
 
-/* MAIN LAYOUT */
-.auth-wrap{
-  min-height:calc(100vh - 73px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:48px 24px;
-  background:linear-gradient(135deg, var(--green-light) 0%, var(--cream) 50%, var(--gold-light) 100%);
-}
-
-/* AUTH CARD */
-.auth-card{
-  background:white;
-  border-radius:28px;
-  padding:48px;
-  width:100%;
-  max-width:480px;
-  box-shadow:0 20px 60px rgba(0,0,0,.08);
-  border:1px solid rgba(0,0,0,.05);
-}
+.auth-wrap{min-height:calc(100vh - 73px);display:flex;align-items:center;justify-content:center;padding:48px 24px;background:linear-gradient(135deg, var(--green-light) 0%, var(--cream) 50%, var(--gold-light) 100%);}
+.auth-card{background:white;border-radius:28px;padding:48px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.05);}
 .auth-logo{text-align:center;margin-bottom:32px;}
 .auth-logo img{height:72px;width:auto;}
 .auth-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--charcoal);text-align:center;margin-bottom:6px;}
 .auth-title em{font-style:italic;color:var(--green);}
 .auth-sub{font-size:13px;color:var(--light);text-align:center;margin-bottom:32px;line-height:1.6;}
-
-/* TABS */
 .auth-tabs{display:flex;background:var(--cream);border-radius:12px;padding:4px;margin-bottom:28px;}
 .auth-tab{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;border-radius:10px;border:none;background:none;color:var(--light);transition:all .2s;font-family:'DM Sans',sans-serif;}
 .auth-tab.active{background:white;color:var(--green-dark);box-shadow:0 2px 8px rgba(0,0,0,.08);}
-
-/* FORM */
 .form-group{margin-bottom:18px;}
 .form-label{font-size:11px;color:var(--mid);letter-spacing:.08em;text-transform:uppercase;font-weight:500;margin-bottom:7px;display:block;}
 .form-input{width:100%;padding:13px 16px;border:1.5px solid rgba(0,0,0,.1);border-radius:12px;font-size:14px;color:var(--charcoal);background:var(--cream);font-family:'DM Sans',sans-serif;transition:border-color .2s;outline:none;}
 .form-input:focus{border-color:var(--green);background:white;}
-.form-input.error{border-color:var(--red);}
-
-/* USER TYPE */
 .user-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
 .user-type-card{border:1.5px solid rgba(0,0,0,.1);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;text-align:center;}
 .user-type-card:hover{border-color:var(--green);}
@@ -75,81 +495,60 @@ nav{padding:16px 48px;display:flex;justify-content:space-between;align-items:cen
 .user-type-card .utc-icon{font-size:24px;margin-bottom:8px;}
 .user-type-card .utc-title{font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:4px;}
 .user-type-card .utc-desc{font-size:11px;color:var(--light);line-height:1.4;}
-
-/* BUTTONS */
 .btn-primary{width:100%;background:linear-gradient(135deg,var(--green-dark),var(--green));color:white;padding:14px;border-radius:40px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .25s;margin-top:8px;}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(58,107,58,.3);}
-.btn-primary:disabled{opacity:.6;transform:none;cursor:not-allowed;}
-
-/* MESSAGES */
 .msg{padding:12px 16px;border-radius:12px;font-size:13px;margin-bottom:16px;display:none;}
 .msg.show{display:block;}
 .msg.error{background:var(--red-light);color:var(--red);}
 .msg.success{background:var(--green-light);color:var(--green-dark);}
 .msg.info{background:var(--blue-light);color:var(--blue);}
-
-/* DIVIDER */
-.divider{display:flex;align-items:center;gap:12px;margin:20px 0;}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(0,0,0,.08);}
-.divider span{font-size:11px;color:var(--light);letter-spacing:.1em;text-transform:uppercase;}
-
-/* FORGOT */
 .forgot-link{text-align:right;margin-top:-10px;margin-bottom:16px;}
-.forgot-link a{font-size:12px;color:var(--green);text-decoration:none;}
-.forgot-link a:hover{text-decoration:underline;}
-
-/* ─── DASHBOARD ─── */
+.forgot-link a{font-size:12px;color:var(--green);text-decoration:none;cursor:pointer;}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:1000;}
+.modal-content{background:white;border-radius:24px;padding:32px;max-width:400px;width:90%;}
+.modal-content h3{font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:16px;}
+.modal-buttons{display:flex;gap:12px;margin-top:20px;}
+.modal-buttons button{flex:1;padding:10px;border-radius:40px;border:none;cursor:pointer;}
+.modal-buttons .cancel{background:var(--cream);color:var(--mid);}
+.modal-buttons .submit{background:var(--green);color:white;}
 .dashboard-wrap{max-width:1000px;margin:0 auto;padding:48px 24px;}
-.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:40px;}
+.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:40px;flex-wrap:wrap;gap:16px;}
 .dash-welcome{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--charcoal);}
 .dash-welcome em{font-style:italic;color:var(--green);}
 .dash-welcome .dash-sub{font-size:14px;color:var(--light);font-family:'DM Sans',sans-serif;margin-top:4px;}
 .btn-logout{background:none;border:1.5px solid rgba(0,0,0,.1);color:var(--mid);padding:9px 20px;border-radius:20px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
 .btn-logout:hover{border-color:var(--red);color:var(--red);}
-
-/* PLAN BADGE */
 .plan-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:32px;}
 .plan-badge.individual{background:var(--blue-light);color:var(--blue);}
 .plan-badge.organization{background:var(--gold-light);color:var(--gold-dark);}
-
-/* DASHBOARD GRID */
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px;}
 .dash-card{background:white;border-radius:20px;padding:28px;border:1px solid rgba(0,0,0,.06);transition:all .25s;}
 .dash-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.08);}
-.dash-card.locked{opacity:.6;cursor:not-allowed;}
-.dash-card.locked:hover{transform:none;box-shadow:none;}
 .dc-icon{font-size:32px;margin-bottom:14px;}
 .dc-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--charcoal);margin-bottom:6px;}
 .dc-desc{font-size:13px;color:var(--mid);line-height:1.6;margin-bottom:16px;}
 .dc-btn{display:inline-block;padding:9px 20px;border-radius:20px;font-size:13px;font-weight:500;text-decoration:none;transition:all .2s;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
 .dc-btn.green{background:var(--green);color:white;}
 .dc-btn.green:hover{background:var(--green-dark);}
-.dc-btn.gold{background:var(--gold);color:white;}
-.dc-btn.gold:hover{background:var(--gold-dark);}
 .dc-btn.outline{background:none;border:1.5px solid var(--green);color:var(--green);}
 .dc-btn.outline:hover{background:var(--green);color:white;}
-.dc-lock{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--light);}
-
-/* UPGRADE BANNER */
+.dc-btn:disabled{opacity:0.5;cursor:not-allowed;}
 .upgrade-banner{background:linear-gradient(135deg,var(--gold-light),white);border:1px solid var(--gold);border-radius:16px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:20px;}
 .ub-text .ub-title{font-size:15px;font-weight:600;color:var(--charcoal);margin-bottom:4px;}
 .ub-text .ub-sub{font-size:13px;color:var(--mid);}
 .ub-btn{background:var(--gold);color:white;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:all .2s;}
 .ub-btn:hover{background:var(--gold-dark);}
-
-/* VIEWS */
 .view{display:none;}
 .view.active{display:block;}
-
-footer{background:var(--charcoal);padding:20px 48px;text-align:center;}
+footer{background:var(--charcoal);padding:20px 48px;text-align:center;margin-top:40px;}
 footer p{font-size:12px;color:rgba(255,255,255,.3);}
-
 @media(max-width:600px){
   nav{padding:12px 20px;}
   .auth-card{padding:32px 24px;}
   .dash-grid{grid-template-columns:1fr;}
   .dashboard-wrap{padding:32px 16px;}
   .upgrade-banner{flex-direction:column;align-items:flex-start;}
+  .nav-right{gap:12px;}
 }
 </style>
 </head>
@@ -157,79 +556,98 @@ footer p{font-size:12px;color:rgba(255,255,255,.3);}
 
 <nav>
   <a href="index.html" class="nav-logo">
-    <img src="logo-safemind.png" alt="Safe Mind">
+    <img src="logo-safemind.png" alt="Safe Mind" onerror="this.style.display='none'">
     <div class="nav-logo-text">
       <span class="main-name">Safe Mind</span>
       <span class="sub-name">Psychological Well-being</span>
     </div>
   </a>
-  <a href="index.html" class="nav-back">← Back to site</a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back" data-i18n="nav_back">← Back to site</a>
+    <div class="lang-switcher">
+      <button class="lang-toggle" id="langToggle" onclick="toggleLangMenu()">EN</button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button onclick="selectLang('en','EN')" data-i18n="lang_en">English</button>
+        <button onclick="selectLang('fr','FR')" data-i18n="lang_fr">Français</button>
+        <button onclick="selectLang('kr','한국어')" data-i18n="lang_kr">한국어</button>
+        <button onclick="selectLang('jp','日本語')" data-i18n="lang_jp">日本語</button>
+        <button onclick="selectLang('zh','中文')" data-i18n="lang_zh">中文</button>
+        <button onclick="selectLang('th','ไทย')" data-i18n="lang_th">ไทย</button>
+        <button onclick="selectLang('de','DE')" data-i18n="lang_de">DE</button>
+        <button onclick="selectLang('es','ES')" data-i18n="lang_es">ES</button>
+      </div>
+    </div>
+  </div>
 </nav>
 
-<!-- AUTH VIEW -->
 <div id="authView" class="view active">
   <div class="auth-wrap">
     <div class="auth-card">
-      <div class="auth-logo">
-        <img src="logo-safemind.png" alt="Safe Mind">
-      </div>
-      <h1 class="auth-title">Welcome to <em>Safe Mind</em></h1>
-      <p class="auth-sub">Your psychological well-being, in a safe and confidential space.</p>
-
+      <div class="auth-logo"><img src="logo-safemind.png" alt="Safe Mind" onerror="this.style.display='none'"></div>
+      <h1 class="auth-title"><span data-i18n="auth_title">Welcome to</span> <em>Safe Mind</em></h1>
+      <p class="auth-sub" data-i18n="auth_sub">Your psychological well-being, in a safe and confidential space.</p>
       <div class="auth-tabs">
-        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
-        <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">Create Account</button>
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')" data-i18n="tab_login">Sign In</button>
+        <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')" data-i18n="tab_signup">Create Account</button>
       </div>
-
-      <!-- LOGIN FORM -->
       <div id="loginForm">
         <div class="msg" id="loginMsg"></div>
-        <div class="form-group">
-          <label class="form-label">Email address</label>
-          <input type="email" class="form-input" id="loginEmail" placeholder="your@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-input" id="loginPassword" placeholder="Your password">
-        </div>
-        <div class="forgot-link"><a href="#" onclick="showForgot()">Forgot password?</a></div>
-        <button class="btn-primary" onclick="handleLogin()" id="loginBtn">Sign In</button>
+        <div class="form-group"><label class="form-label" data-i18n="login_email">Email address</label><input type="email" class="form-input" id="loginEmail" data-i18n-placeholder="login_email"></div>
+        <div class="form-group"><label class="form-label" data-i18n="login_password">Password</label><input type="password" class="form-input" id="loginPassword" data-i18n-placeholder="login_password"></div>
+        <div class="forgot-link"><a onclick="showForgot()" data-i18n="login_forgot">Forgot password?</a></div>
+        <button class="btn-primary" onclick="signIn()" data-i18n="login_btn">Sign In</button>
       </div>
-
-      <!-- SIGNUP FORM -->
       <div id="signupForm" style="display:none;">
         <div class="msg" id="signupMsg"></div>
-
-        <div class="form-group">
-          <label class="form-label">I am</label>
+        <div class="form-group"><label class="form-label" data-i18n="signup_type_label">I am</label>
           <div class="user-type-grid">
             <div class="user-type-card selected" id="typeIndividual" onclick="selectType('individual')">
-              <div class="utc-icon">👤</div>
-              <div class="utc-title">Individual</div>
-              <div class="utc-desc">Freelancer, artist, or independent worker</div>
+              <div class="utc-icon">👤</div><div class="utc-title" data-i18n="signup_type_individual">Individual</div><div class="utc-desc" data-i18n="signup_type_individual_desc">Freelancer, artist, or independent worker</div>
             </div>
             <div class="user-type-card" id="typeOrg" onclick="selectType('organization')">
-              <div class="utc-icon">🏢</div>
-              <div class="utc-title">Organization</div>
-              <div class="utc-desc">Employee of a company with a Safe Mind contract</div>
+              <div class="utc-icon">🏢</div><div class="utc-title" data-i18n="signup_type_org">Organization</div><div class="utc-desc" data-i18n="signup_type_org_desc">Employee of a company with a Safe Mind contract</div>
             </div>
           </div>
         </div>
+        <div class="form-group"><label class="form-label" data-i18n="signup_name">Full name</label><input type="text" class="form-input" id="signupName" data-i18n-placeholder="signup_name"></div>
+        <div class="form-group"><label class="form-label" data-i18n="signup_email">Email address</label><input type="email" class="form-input" id="signupEmail" data-i18n-placeholder="signup_email"><div style="font-size:11px;color:var(--light);margin-top:6px;display:none;" id="orgHint" data-i18n="signup_hint">If your organization has a Safe Mind contract, use your work email for automatic access.</div></div>
+        <div class="form-group"><label class="form-label" data-i18n="signup_password">Password</label><input type="password" class="form-input" id="signupPassword" data-i18n-placeholder="signup_password"></div>
+        <button class="btn-primary" onclick="signUp()" data-i18n="signup_btn">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-        <div class="form-group">
-          <label class="form-label">Full name</label>
-          <input type="text" class="form-input" id="signupName" placeholder="Your full name">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email address</label>
-          <input type="email" class="form-input" id="signupEmail" placeholder="your@email.com">
-          <div style="font-size:11px;color:var(--light);margin-top:6px;" id="orgHint" style="display:none;">
-            If your organization has a Safe Mind contract, use your work email for automatic access.
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-input" id="signupPassword" placeholder="Minimum 8 characters">
-        </div>
-        <div class="form-group">
-          <label class
+<div id="forgotModal" class="modal">
+  <div class="modal-content">
+    <h3 data-i18n="reset_title">Reset your password</h3>
+    <p style="font-size:13px;color:var(--mid);margin-bottom:16px;" data-i18n="reset_desc">Enter your email and we'll send you a link to reset your password.</p>
+    <div class="form-group"><input type="email" class="form-input" id="resetEmail" placeholder="your@email.com"></div>
+    <div class="msg" id="resetMsg"></div>
+    <div class="modal-buttons"><button class="cancel" onclick="closeForgot()" data-i18n="reset_cancel">Cancel</button><button class="submit" onclick="resetPassword()" data-i18n="reset_send">Send reset link</button></div>
+  </div>
+</div>
+
+<div id="dashboardView" class="view">
+  <div class="dashboard-wrap">
+    <div class="dash-header"><div class="dash-welcome"><span data-i18n="dash_welcome">Hello,</span> <em id="dashUserName">there</em><div class="dash-sub" id="dashUserEmail">user@example.com</div></div><button class="btn-logout" onclick="signOutUser()" data-i18n="dash_signout">Sign Out</button></div>
+    <div class="plan-badge individual" id="planBadge">👤 Individual Plan</div>
+    <div class="upgrade-banner" id="upgradeBanner"><div class="ub-text"><div class="ub-title" data-i18n="upgrade_title">✨ Unlock everything with a Premium Plan</div><div class="ub-sub" data-i18n="upgrade_desc">Get unlimited assessments, priority support, and personalized guidance.</div></div><a href="booking.html" class="ub-btn" data-i18n="upgrade_btn">Upgrade</a></div>
+    <div class="dash-grid">
+      <div class="dash-card"><div class="dc-icon">📊</div><div class="dc-title" data-i18n="card_assessments_title">Psychological Assessments</div><div class="dc-desc" data-i18n="card_assessments_desc">Take validated tests for depression, anxiety, burnout, PTSD, and more.</div><button class="dc-btn green" onclick="goToAssessment('phq9')" data-i18n="card_assessments_btn">Start Assessment →</button></div>
+      <div class="dash-card"><div class="dc-icon">📅</div><div class="dc-title" data-i18n="card_sessions_title">My Sessions</div><div class="dc-desc" data-i18n="card_sessions_desc">View and manage your scheduled consultation sessions.</div><button class="dc-btn green" onclick="goToBooking()" data-i18n="card_sessions_btn">View Sessions →</button></div>
+      <div class="dash-card"><div class="dc-icon">📄</div><div class="dc-title" data-i18n="card_history_title">Results History</div><div class="dc-desc" data-i18n="card_history_desc">Access your past assessment results and track your progress.</div><button class="dc-btn outline" disabled data-i18n="card_history_btn">Coming Soon</button></div>
+      <div class="dash-card"><div class="dc-icon">🔒</div><div class="dc-title" data-i18n="card_privacy_title">Privacy & Security</div><div class="dc-desc" data-i18n="card_privacy_desc">Manage your data, export your information, and adjust privacy settings.</div><button class="dc-btn outline" disabled data-i18n="card_privacy_btn">Coming Soon</button></div>
+    </div>
+  </div>
+</div>
+
+<footer><p data-i18n="footer_text">© 2026 Safe Mind — Psychological well-being for everyone in the creative industry.</p></footer>
+
+<script>
+window.selectedUserType = 'individual';
+window.goToAssessment = (test) => window.location.href = `test-${test}.html`;
+window.goToBooking = () => window.location.href = 'booking.html';
+</script>
+</body>
+</html>
