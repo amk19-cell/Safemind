@@ -3,12 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Book a Consultation - Safe Mind</title>
+<title>Book a Consultation - Creaven</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 :root{
@@ -160,9 +157,9 @@ footer p{font-size:12px;color:rgba(255,255,255,.3);}
 
 <nav>
   <a href="index.html" class="nav-logo">
-    <img src="logo-safemind.png" alt="Safe Mind" onerror="this.style.display='none'">
+    <img src="logo-creaven.png" alt="Creaven" onerror="this.style.display='none'">
     <div class="nav-logo-text">
-      <span class="main-name">Safe Mind</span>
+      <span class="main-name">Creaven</span>
       <span class="sub-name">Psychological Well-being</span>
     </div>
   </a>
@@ -333,27 +330,18 @@ footer p{font-size:12px;color:rgba(255,255,255,.3);}
 </div>
 
 <footer>
-  <p>Safe Mind 2026 - Psychological Well-being for the Creative Industry - All rights reserved.</p>
+  <p>Creaven 2026 - Psychological Well-being for the Creative Industry - All rights reserved.</p>
 </footer>
 
 <script>
 // ─── CONFIG ───
 const EMAILJS_PUBLIC_KEY = '1hbqBu0F2Qh3qxAa6';
-const EMAILJS_SERVICE_ID = 'service_Safemind';
+const EMAILJS_SERVICE_ID = 'service_creaven';
 const EMAILJS_TEMPLATE_ID = 'template_Yoursessionsafe';
 
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDQsBvVIPG8MeaLf1sjWVSgXMOuOhoOi1U",
-  authDomain: "safemind-f96ad.firebaseapp.com",
-  projectId: "safemind-f96ad",
-  storageBucket: "safemind-f96ad.firebasestorage.app",
-  messagingSenderId: "1023142792047",
-  appId: "1:1023142792047:web:c441cddbd9634523adf69a"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// Firestore will be added when configured
 
 // ─── STATE ───
 let selectedType = null;
@@ -518,7 +506,7 @@ async function loadPractitioners() {
   grid.innerHTML = `<div class="pract-loading">${t.pract_loading}</div>`;
   
   try {
-    const snap = await db.collection('practitioners').where('status','==','approved').get();
+    // Firestore disabled - using hardcoded practitioners
     
     if (snap.empty) {
       // Show Dani as default practitioner while building the network
@@ -554,16 +542,15 @@ async function loadPractitioners() {
 
 function buildPractCard(p) {
   return `
-    <div class="pract-card" onclick="selectPract('${p.uid}','${p.fullName}','${p.languages}')">
+    <div class="pract-card" onclick="selectPract('${p.uid}','${p.fullName}','${p.notifEmail || 'creavenconnect@gmail.com'}')">
       <div class="pract-avatar">${p.emoji || '🧠'}</div>
       <div class="pract-name">${p.fullName}</div>
-      <div class="pract-langs">${p.languages}</div>
-      <div class="pract-spec">${p.specialities}</div>
+      <div class="pract-title" style="font-size:12px;color:var(--light);margin-top:2px;">${p.title || ''}</div>
     </div>`;
 }
 
-function selectPract(uid, name, langs) {
-  selectedPract = {uid, name, langs};
+function selectPract(uid, name, notifEmail) {
+  selectedPract = {uid, name, notifEmail};
   document.querySelectorAll('.pract-card').forEach(c => {
     c.classList.toggle('selected', c.querySelector('.pract-name').textContent === name);
   });
@@ -578,25 +565,10 @@ const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MONTHS_FR = ['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre'];
 
-async function loadCalendar() {
-  // Load availability from Firestore for selected practitioner
+function loadCalendar() {
+  // Using generated slots until Firestore is configured
   availableSlots = {};
-  try {
-    const snap = await db.collection('availability')
-      .where('practitionerUid', '==', selectedPract.uid)
-      .where('status', '==', 'available')
-      .get();
-    snap.forEach(doc => {
-      const d = doc.data();
-      const dateKey = d.date; // format YYYY-MM-DD
-      if (!availableSlots[dateKey]) availableSlots[dateKey] = [];
-      availableSlots[dateKey].push({...d, docId: doc.id});
-    });
-  } catch(err) {
-    console.error('Could not load slots:', err);
-    // Generate default slots for demo
-    generateDemoSlots();
-  }
+  generateDemoSlots();
   renderCalendar();
 }
 
@@ -764,36 +736,25 @@ async function confirmBooking() {
 
   const sessionCode = generateCode();
   const typeName = t[`t${selectedType}_title`] || typeNames[selectedType];
-  const sessionLink = `https://safemind.pages.dev/consultation.html?code=${sessionCode}`;
+  const sessionLink = `https://creaven.pages.dev/consultation.html?code=${sessionCode}`;
 
   try {
-    // Save booking to Firestore
-    await db.collection('bookings').add({
+    // Save booking locally (Firestore will be added when configured)
+    const bookingRecord = {
       clientName: name,
       clientEmail: email,
-      practitionerUid: selectedPract.uid,
       practitionerName: selectedPract.name,
       consultationType: typeName,
       date: selectedDate,
       time: selectedSlot.time,
-      duration: selectedSlot.duration || 60,
-      sessionLang: lang,
-      note: note || '',
       sessionCode: sessionCode,
       sessionLink: sessionLink,
-      status: 'confirmed',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    // Mark slot as booked
-    if (availableSlots[selectedDate] && availableSlots[selectedDate][selectedSlot.idx]?.docId) {
-      await db.collection('availability').doc(availableSlots[selectedDate][selectedSlot.idx].docId).update({
-        status: 'booked',
-        clientName: name,
-        clientEmail: email,
-        sessionCode: sessionCode
-      });
-    }
+      createdAt: new Date().toISOString()
+    };
+    // Store in localStorage as backup
+    const existing = JSON.parse(localStorage.getItem('creaven_bookings') || '[]');
+    existing.push(bookingRecord);
+    localStorage.setItem('creaven_bookings', JSON.stringify(existing));
 
     // Send confirmation email to client
     msg.textContent = 'Sending confirmation email...';
@@ -812,8 +773,8 @@ async function confirmBooking() {
 
     // Send notification to practitioner and admin
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email: 'hellosafemindconnect@gmail.com',
-      to_name: 'Safe Mind Admin',
+      to_email: 'creavenconnect@gmail.com',
+      to_name: 'Creaven Admin',
       practitioner_name: selectedPract.name,
       consultation_type: typeName,
       session_date: selectedDate,
